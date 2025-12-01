@@ -1,0 +1,73 @@
+{% extends 'realty/base.html' %}
+
+{% load static %}
+
+{% block title %}Главная - Риелторские услуги{% endblock %}
+
+{% block content %}
+<div class="hero-section bg-light py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-3">Найдите свой идеальный дом</h1>
+                <p class="lead mb-4">Лучшие объекты недвижимости от проверенных риелторов</p>
+                <a href="{% url 'property_list' %}" class="btn btn-primary btn-lg">Смотреть все объекты</a>
+            </div>
+            <div class="col-lg-6">
+                <img src='{% static "images/hero-bg.jpg" %}'  alt="Недвижимость" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-5">
+    <h2 class="text-center mb-4">Рекомендуемые объекты</h2>
+    <div class="row">
+        {% for property in featured_properties %}
+        <div class="col-md-3 mb-4">
+            <div class="card property-card h-100">
+                {% if property.is_featured %}
+                <span class="badge bg-warning featured-badge">Рекомендуем</span>
+                {% endif %}
+                <img src="{{ property.main_image.url }}" class="card-img-top" alt="{{ property.title }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ property.title|truncatechars:30 }}</h5>
+                    <p class="card-text">{{ property.description|truncatechars:60 }}</p>
+                    <p class="fw-bold text-primary">{{ property.price }} руб.</p>
+                    <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary">Подробнее</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center">Пока нет рекомендуемых объектов</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="mb-5">
+    <h2 class="text-center mb-4">Наши риелторы</h2>
+    <div class="row">
+        {% for realtor in realtors %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 text-center">
+                {% if realtor.photo %}
+                <img src="{{ realtor.photo.url }}" class="card-img-top" alt="{{ realtor.user.get_full_name }}" style="height: 250px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ realtor.user.get_full_name }}</h5>
+                    <p class="card-text">Опыт работы: {{ realtor.experience_years }} лет</p>
+                    <p class="card-text">{{ realtor.bio|truncatechars:100 }}</p>
+                    <p class="text-muted">Лицензия: {{ realtor.license_number }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center">Риелторы не найдены</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

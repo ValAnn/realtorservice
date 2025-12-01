@@ -1,0 +1,113 @@
+{% extends 'realty/base.html' %}
+
+{% block title %}Объекты недвижимости - Риелторские услуги{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Объекты недвижимости</h1>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <form method="get" class="card p-3">
+            <h5>Фильтры</h5>
+            
+            <div class="mb-3">
+                <label class="form-label">Тип недвижимости</label>
+                <select name="property_type" class="form-select">
+                    <option value="">Все типы</option>
+                    {% for type in property_types %}
+                    <option value="{{ type.0 }}" {% if request.GET.property_type == type.0 %}selected{% endif %}>
+                        {{ type.1 }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Статус</label>
+                <select name="status" class="form-select">
+                    <option value="">Все статусы</option>
+                    {% for status in status_choices %}
+                    <option value="{{ status.0 }}" {% if request.GET.status == status.0 %}selected{% endif %}>
+                        {{ status.1 }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Сортировка</label>
+                <select name="sort" class="form-select">
+                    <option value="">По умолчанию</option>
+                    <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Сначала новые</option>
+                    <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Цена (по возрастанию)</option>
+                    <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Цена (по убыванию)</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Применить</button>
+            <a href="{% url 'property_list' %}" class="btn btn-outline-secondary mt-2">Сбросить</a>
+        </form>
+    </div>
+    
+    <div class="col-md-9">
+        <div class="row">
+            {% for property in properties %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card property-card h-100">
+                    {% if property.is_featured %}
+                    <span class="badge bg-warning featured-badge">Рекомендуем</span>
+                    {% endif %}
+                    <img src="{{ property.main_image.url }}" class="card-img-top" alt="{{ property.title }}" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ property.title|truncatechars:30 }}</h5>
+                        <p class="card-text">{{ property.description|truncatechars:80 }}</p>
+                        <p class="fw-bold text-primary">{{ property.price }} руб.</p>
+                        <p class="text-muted">
+                            <small>{{ property.get_property_type_display }} | {{ property.area }} м²</small>
+                        </p>
+                        <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Объекты не найдены. Попробуйте изменить параметры фильтрации.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Пагинация -->
+        {% if is_paginated %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Назад</a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Вперед</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
