@@ -1,0 +1,48 @@
+{% extends 'realty/base.html' %}
+
+{% block title %}Личный кабинет Риелтора{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Панель управления, {{ request.user.first_name }}</h1>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Мои объекты недвижимости</h2>
+            <a href="{% url 'property_add' %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Добавить новый объект
+            </a>
+        </div>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Адрес</th>
+                    <th>Цена</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in properties %}
+                <tr>
+                    <td><a href="{% url 'property_detail' p.pk %}">{{ p.title }}</a></td>
+                    <td>{{ p.address|truncatechars:40 }}</td>
+                    <td>{{ p.price|floatformat:0 }} руб.</td>
+                    <td><span class="badge bg-info">{{ p.get_status_display }}</span></td>
+                    <td>
+                        <a href="{% url 'property_edit' p.pk %}" class="btn btn-sm btn-outline-primary">Редактировать</a>
+                        <a href="{% url 'property_delete' p.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">У вас пока нет добавленных объектов.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

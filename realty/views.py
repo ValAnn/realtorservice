@@ -1,6 +1,33 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import ListView, DetailView
 from .models import Property, Realtor
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from .forms import ClientSignUpForm, RealtorSignUpForm # Импортируем наши формы
+
+from .forms import ClientSignUpForm, RealtorSignUpForm, PropertyForm # Убедитесь, что PropertyForm импортирована
+
+
+@login_required # Только для авторизованных пользователей
+def realtor_dashboard(request):
+    try:
+        # Проверяем, является ли пользователь риелтором
+        realtor_profile = Realtor.objects.get(user=request.user)
+    except ObjectDoesNotExist:
+        # Если профиля риелтора нет, перенаправляем на ошибку или главную
+        return redirect('home') 
+
+    # Получаем только те объекты, которые связаны с этим риелтором
+    my_properties = Property.objects.filter(realtor=realtor_profile).order_by('-created_at')
+
+    context = {
+        'realtor': realtor_profile,
+        'properties': my_properties,
+    }
+    return render(request, 'realty/realtor_dashboard.html', context)
 
 def home(request):
     """Главная страница"""
@@ -55,3 +82,59 @@ class PropertyDetailView(DetailView):
     model = Property
     template_name = 'realty/property_detail.html'
     context_object_name = 'property'
+
+
+def client_signup(request):
+    if request.method == 'POST':
+        form = ClientSignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Автоматический вход после регистрации
+            login(request, user) 
+            return redirect('home')  # Перенаправляем на главную
+    else:
+        form = ClientSignUpForm()
+        
+    return render(request, 'realty/client_signup.html', {'form': form})
+
+def realtor_signup(request):
+    if request.method == 'POST':
+        form = RealtorSignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Автоматический вход после регистрации
+            login(request, user)
+            return redirect('home')
+    else:
+        form = RealtorSignUpForm()
+        
+    return render(request, 'realty/realtor_signup.html', {'form': form})
+
+@login_required
+def property_add(request): # <--- ЭТА ФУНКЦИЯ ДОЛЖНА СУЩЕСТВОВАТЬ
+    try:
+        # Убедимся, что добавляет именно риелтор
+        realtor_profile = Realtor.objects.get(user=request.user)
+    except ObjectDoesNotExist:
+        # Если это обычный клиент, он не должен добавлять объекты
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = PropertyForm(request.POST, request.FILES) 
+        if form.is_valid():
+            new_property = form.save(commit=False)
+            new_property.realtor = realtor_profile
+            new_property.save()
+            
+            from django.contrib import messages
+            messages.success(request, 'Новый объект успешно добавлен!')
+            
+            return redirect('realtor_dashboard')
+    else:
+        form = PropertyForm()
+        
+    context = {
+        'form': form,
+        'is_edit': False
+    }
+    return render(request, 'realty/property_form.html', context)
