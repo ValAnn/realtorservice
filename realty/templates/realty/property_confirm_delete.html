@@ -1,0 +1,50 @@
+{% extends 'realty/base.html' %}
+{% load static %}
+
+{% block title %}Удаление объекта - Риелторские услуги{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-danger shadow">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-trash-fill me-2"></i>
+                        Подтверждение удаления
+                    </h3>
+                </div>
+                
+                <div class="card-body">
+                    <p class="lead">
+                        Вы действительно хотите удалить объект:
+                    </p>
+                    <h4 class="text-danger mb-4">
+                        <strong>{{ property.title }}</strong>
+                        <br>
+                        <small class="text-muted">({{ property.address }})</small>
+                    </h4>
+                    
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>Внимание:</strong> Это действие **необратимо**. Все данные, включая фотографии, будут удалены.
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'realtor_dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg me-1"></i> Отменить
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash-fill me-1"></i> Да, удалить навсегда
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

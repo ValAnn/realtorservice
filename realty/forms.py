@@ -66,28 +66,36 @@ class RealtorSignUpForm(UserCreationForm):
 
 # --- 3. ФОРМА УПРАВЛЕНИЯ ОБЪЕКТОМ НЕДВИЖИМОСТИ ---
 class PropertyForm(forms.ModelForm):
-    """Форма для добавления и редактирования объектов недвижимости риелтором."""
+    """
+    Форма для добавления и редактирования объектов недвижимости.
+    Поле client теперь присутствует, поскольку оно обязательно в модели, 
+    но мы делаем его скрытым и заполним его в представлении (views.py).
+    """
+    
+    client = forms.ModelChoiceField(
+        queryset=Client.objects.all(),
+        widget=forms.HiddenInput(),
+        required=False # Ставим False, т.к. мы заполним его в view
+    )
+
     class Meta:
         model = Property
-        # Исключаем поля, которые заполняются автоматически (realtor, created_at, updated_at) 
-        # или заполняются только администратором (is_featured)
-        exclude = ('realtor', 'created_at', 'is_featured', 'updated_at')
+        exclude = ('realtor', 'created_at', 'updated_at', 'is_featured')
         
-        # Применяем классы Bootstrap и настройки виджетов
         widgets = {
             'description': forms.Textarea(attrs={'rows': 5, 'class': 'form-control'}),
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'price': forms.NumberInput(attrs={'class': 'form-control'}),
             'bedrooms': forms.NumberInput(attrs={'class': 'form-control'}),
             'bathrooms': forms.NumberInput(attrs={'class': 'form-control'}),
-            'square_feet': forms.NumberInput(attrs={'class': 'form-control'}),
+            'area': forms.NumberInput(attrs={'class': 'form-control'}), # ИСПРАВЛЕНО: area
             'address': forms.TextInput(attrs={'class': 'form-control'}),
-            'city': forms.TextInput(attrs={'class': 'form-control'}),
-            'state': forms.TextInput(attrs={'class': 'form-control'}),
-            'zipcode': forms.TextInput(attrs={'class': 'form-control'}),
             'property_type': forms.Select(attrs={'class': 'form-select'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
-            # photo_main не требует класса form-control, так как это FileInput
+            'main_image': forms.ClearableFileInput(attrs={'class': 'form-control'}), # ИСПРАВЛЕНО: main_image
+            'image1': forms.ClearableFileInput(attrs={'class': 'form-control'}), # ИСПРАВЛЕНО: image1
+            'image2': forms.ClearableFileInput(attrs={'class': 'form-control'}), # ИСПРАВЛЕНО: image2
+            'image3': forms.ClearableFileInput(attrs={'class': 'form-control'}), # ИСПРАВЛЕНО: image3
         }
         
         labels = {
@@ -96,12 +104,12 @@ class PropertyForm(forms.ModelForm):
             'price': 'Цена (руб.)',
             'bedrooms': 'Количество спален',
             'bathrooms': 'Количество ванных',
-            'square_feet': 'Площадь (кв. м.)',
+            'area': 'Площадь (м²)', # ИСПРАВЛЕНО: area
             'address': 'Адрес',
-            'city': 'Город',
-            'state': 'Регион',
-            'zipcode': 'Индекс',
             'property_type': 'Тип недвижимости',
             'status': 'Статус',
-            'photo_main': 'Главное фото',
+            'main_image': 'Главное фото', # ИСПРАВЛЕНО: main_image
+            'image1': 'Изображение 1', # ИСПРАВЛЕНО: image1
+            'image2': 'Изображение 2', # ИСПРАВЛЕНО: image2
+            'image3': 'Изображение 3', # ИСПРАВЛЕНО: image3
         }

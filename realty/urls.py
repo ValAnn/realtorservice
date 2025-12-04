@@ -12,4 +12,8 @@ urlpatterns = [
     path('dashboard/', views.realtor_dashboard, name='realtor_dashboard'),
 
     path('property/add/', views.property_add, name='property_add'), 
+
+    path('property/edit/<int:pk>/', views.property_edit, name='property_edit'),
+    path('property/delete/<int:pk>/', views.property_delete, name='property_delete'),
+    
 ]
