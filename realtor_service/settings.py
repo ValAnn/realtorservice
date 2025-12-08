@@ -137,3 +137,9 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+# settings.py
+
+LOGIN_REDIRECT_URL = '/' # Куда перенаправлять после успешного входа
+LOGOUT_REDIRECT_URL = '/' # Куда перенаправлять после выхода
+LOGIN_URL = '/login/' # URL-адрес страницы входа

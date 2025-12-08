@@ -34,7 +34,7 @@ def realtor_dashboard(request):
 
 def home(request):
     """Главная страница"""
-    featured_properties = Property.objects.filter(is_featured=True)[:4]
+    featured_properties = Property.objects.all()[:3]
     realtors = Realtor.objects.all()[:3]
     
     context = {
@@ -88,24 +88,36 @@ class PropertyDetailView(DetailView):
 
 
 def client_signup(request):
+    """
+    Обрабатывает регистрацию нового клиента.
+    """
+    
     if request.method == 'POST':
         form = ClientSignUpForm(request.POST)
+        
         if form.is_valid():
-            user = form.save()
-            # Автоматический вход после регистрации
-            login(request, user) 
-            return redirect('home')  # Перенаправляем на главную
+            try:
+                user = form.save() 
+                
+                login(request, user)
+                messages.success(request, 'Вы успешно зарегистрированы и вошли в систему как клиент!')
+                return redirect('home') 
+                
+            except Exception as e:
+                messages.error(request, f'Произошла внутренняя ошибка при регистрации: {e}')
+
+
     else:
         form = ClientSignUpForm()
-        
-    return render(request, 'realty/client_signup.html', {'form': form})
+    
+    context = {'form': form}
+    return render(request, 'realty/client_signup.html', context)
 
 def realtor_signup(request):
     if request.method == 'POST':
         form = RealtorSignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Автоматический вход после регистрации
             login(request, user)
             return redirect('home')
     else:
@@ -118,12 +130,10 @@ def property_add(request):
     try:
         realtor_profile = Realtor.objects.get(user=request.user)
     except ObjectDoesNotExist:
-        # Если это обычный клиент, перенаправляем, если им не положено добавлять
         messages.error(request, 'У вас нет прав для добавления объектов.')
         return redirect('home')
 
-    # 1. Получаем/Создаем профиль клиента для текущего пользователя (риелтора)
-    # Это решает проблему обязательного поля client в модели Property.
+
     client_profile, created = Client.objects.get_or_create(
         user=request.user, 
         defaults={
@@ -139,7 +149,7 @@ def property_add(request):
             
             # Привязка
             new_property.realtor = realtor_profile
-            new_property.client = client_profile # Устанавливаем обязательное поле client!
+            new_property.client = client_profile
             
             new_property.save()
             
@@ -147,9 +157,7 @@ def property_add(request):
             
             return redirect('realtor_dashboard')
         else:
-            # 🚨 ЭТОТ БЛОК ТЕПЕРЬ ОБЯЗАТЕЛЕН для вывода ошибки
             messages.error(request, 'Ошибка валидации! Объект не сохранен. Проверьте форму.')
-            # Если форма недействительна, она будет передана в шаблон с ошибками
     else:
         form = PropertyForm()
         
@@ -159,9 +167,6 @@ def property_add(request):
     }
     return render(request, 'realty/property_form.html', context)
 
-# realty/views.py (Обновленный блок property_edit)
-
-# realty/views.py (Обновленный блок property_edit)
 
 @login_required
 def property_edit(request, pk):
@@ -173,18 +178,15 @@ def property_edit(request, pk):
     
     property_instance = get_object_or_404(Property, pk=pk)
     
-    # 2. Проверяем, принадлежит ли объект текущему риелтору
     if property_instance.realtor != realtor_profile:
         messages.error(request, 'У вас нет прав на редактирование этого объекта.')
         return redirect('realtor_dashboard')
 
-    # 3. 🛠️ ЛОГИКА АВТОМАТИЧЕСКОГО ЗАПОЛНЕНИЯ ОТСУТСТВУЮЩЕГО КЛИЕНТА
-    # Если объект был создан до внедрения обязательного поля "client", мы его заполним.
+
     try:
         current_client = property_instance.client
     except Client.DoesNotExist: # Перехватываем ошибку, если client_id == NULL
-        # Если клиент отсутствует (этот объект был создан старым способом), 
-        # привязываем его к текущему пользователю-риелтору (как в property_add).
+
         client_profile, created = Client.objects.get_or_create(
             user=request.user, 
             defaults={
@@ -193,19 +195,17 @@ def property_edit(request, pk):
             }
         )
         property_instance.client = client_profile
-        property_instance.save() # Сохраняем, чтобы client_id был заполнен
-        current_client = client_profile # Устанавливаем текущего клиента
-    # 🛠️ КОНЕЦ ЛОГИКИ АВТОЗАПОЛНЕНИЯ КЛИЕНТА
+        property_instance.save() 
+        current_client = client_profile 
 
     if request.method == 'POST':
         form = PropertyForm(request.POST, request.FILES, instance=property_instance)
         if form.is_valid():
             updated_property = form.save(commit=False)
             
-            # Теперь updated_property.client гарантированно существует 
-            # благодаря блоку try/except выше
+
             updated_property.realtor = property_instance.realtor 
-            updated_property.client = current_client # Используем текущего клиента
+            updated_property.client = current_client
             
             updated_property.save() 
             
@@ -215,7 +215,6 @@ def property_edit(request, pk):
             messages.error(request, 'Ошибка валидации! Объект не обновлен. Проверьте форму.')
             
     else:
-        # Загружаем форму с текущими данными объекта
         form = PropertyForm(instance=property_instance)
     
     context = {
@@ -228,9 +227,6 @@ def property_edit(request, pk):
 # --- ФУНКЦИЯ УДАЛЕНИЯ ОБЪЕКТА ---
 @login_required
 def property_delete(request, pk):
-    """
-    Позволяет риелтору удалить объект недвижимости (с подтверждением, если POST).
-    """
     try:
         realtor_profile = Realtor.objects.get(user=request.user)
     except ObjectDoesNotExist:
@@ -239,20 +235,17 @@ def property_delete(request, pk):
 
     property_instance = get_object_or_404(Property, pk=pk)
     
-    # Проверяем права собственности
     if property_instance.realtor != realtor_profile:
         messages.error(request, 'У вас нет прав на удаление этого объекта.')
         return redirect('realtor_dashboard')
 
     if request.method == 'POST':
-        title = property_instance.title # Сохраняем название до удаления
+        title = property_instance.title
         property_instance.delete()
         messages.success(request, f'Объект "{title}" успешно удален.')
         return redirect('realtor_dashboard')
     
-    # Если GET запрос, то просим подтверждение
     context = {
         'property': property_instance
     }
-    # Вам потребуется создать шаблон 'realty/property_confirm_delete.html'
     return render(request, 'realty/property_confirm_delete.html', context)

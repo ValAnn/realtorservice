@@ -1,0 +1,15 @@
+{
+  "name": "realtorservice",
+  "version": "1.0.0",
+  "description": "venv\\Scripts\\activate - активация venv\r pip install -r requirements.txt",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^15.7.1"
+  }
+}

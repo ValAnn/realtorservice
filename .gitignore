@@ -68,3 +68,6 @@ venv.bak/
 # Миграции (осторожно! исключайте только если понимаете последствия)
 # !realty/migrations/
 # !realty/migrations/__init__.py
+
+node_modules/
+cypress/

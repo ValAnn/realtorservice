@@ -22,3 +22,10 @@ python manage.py createsuperuser
 7. Запустите сервер: `python manage.py runserver`
 
 git rm -r --cached venv
+
+npx cypress open
+
+
+npm init -y
+npm install cypress --save-dev
+npx cypress open

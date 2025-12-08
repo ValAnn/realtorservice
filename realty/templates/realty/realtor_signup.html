@@ -1,17 +1,192 @@
 {% extends 'realty/base.html' %}
 
-{% block title %}Регистрация Риелтора{% endblock %}
+{% block title %}Регистрация риелтора{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h2 class="mb-4">Регистрация нового риелтора</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
-        </form>
-        <p class="mt-3">Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h3 class="mb-0">
+                        <i class="bi bi-person-rolodex me-2"></i> Регистрация риелтора
+                    </h3>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <div class="form-floating">
+                                <input type="text" name="username" 
+                                       class="form-control form-control-minimal {% if form.username.errors %}is-invalid{% endif %}" 
+                                       id="{{ form.username.id_for_label }}" placeholder="{{ form.username.label }}" 
+                                       required value="{{ form.username.value|default_if_none:'' }}">
+                                <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                            </div>
+                            {% for error in form.username.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-floating">
+                                <input type="email" name="email" 
+                                       class="form-control form-control-minimal {% if form.email.errors %}is-invalid{% endif %}" 
+                                       id="{{ form.email.id_for_label }}" placeholder="{{ form.email.label }}" 
+                                       required value="{{ form.email.value|default_if_none:'' }}">
+                                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                            </div>
+                            {% for error in form.email.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-floating">
+                                    <input type="text" name="first_name" 
+                                           class="form-control form-control-minimal {% if form.first_name.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.first_name.id_for_label }}" placeholder="{{ form.first_name.label }}" 
+                                           required value="{{ form.first_name.value|default_if_none:'' }}">
+                                    <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+                                </div>
+                                {% for error in form.first_name.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <div class="form-floating">
+                                    <input type="text" name="last_name" 
+                                           class="form-control form-control-minimal {% if form.last_name.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.last_name.id_for_label }}" placeholder="{{ form.last_name.label }}" 
+                                           required value="{{ form.last_name.value|default_if_none:'' }}">
+                                    <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+                                </div>
+                                {% for error in form.last_name.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-floating">
+                                    <input type="text" name="license_number" 
+                                           class="form-control form-control-minimal {% if form.license_number.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.license_number.id_for_label }}" placeholder="{{ form.license_number.label }}" 
+                                           required value="{{ form.license_number.value|default_if_none:'' }}">
+                                    <label for="{{ form.license_number.id_for_label }}">{{ form.license_number.label }}</label>
+                                </div>
+                                {% for error in form.license_number.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <div class="form-floating">
+                                    <input type="text" name="phone" 
+                                           class="form-control form-control-minimal {% if form.phone.errors %}is-invalid{% endif %}" 
+                                           id="{{ form.phone.id_for_label }}" placeholder="{{ form.phone.label }}" 
+                                           required value="{{ form.phone.value|default_if_none:'' }}">
+                                    <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                                </div>
+                                {% for error in form.phone.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-floating">
+                                <input type="password" name="password" 
+                                       class="form-control form-control-minimal {% if form.password.errors %}is-invalid{% endif %}" 
+                                       id="{{ form.password.id_for_label }}" placeholder="{{ "Password" }}" required>
+                                <label for="{{ "Password" }}">{{ "Password" }}</label>
+                            </div>
+                            {% for error in form.password.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-floating">
+                                <input type="password" name="password2" 
+                                       class="form-control form-control-minimal {% if form.password2.errors %}is-invalid{% endif %}" 
+                                       id="{{ form.password2.id_for_label }}" placeholder="{{ form.password2.label }}" required>
+                                <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+                            </div>
+                            {% for error in form.password2.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                Зарегистрироваться как риелтор
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+
+                <div class="card-footer text-center py-3 bg-light">
+                    <p class="mb-0">
+                        Уже есть аккаунт? <a href="{% url 'login' %}" class="text-success fw-bold">Войти</a>.
+                    </p>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
+
+<style>
+/* --- СТИЛИ ДЛЯ МИНИМАЛИСТИЧНОГО ВИДА (Только нижняя линия) --- */
+.form-control-minimal {
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    box-shadow: none !important;
+    padding-left: 0;
+    border-bottom: 1px solid #ced4da;
+}
+
+.form-control-minimal:focus {
+    border-color: #198754; /* Цвет Success при фокусе (зеленый) */
+    border-width: 2px;
+}
+
+/* Переопределение стилей для корректной работы form-floating */
+.form-floating > .form-control-minimal {
+    padding-top: 2rem !important; 
+    padding-bottom: 0.5rem !important;
+    height: auto; 
+}
+
+/* Убираем жирность метки в form-floating */
+.form-floating > label {
+    padding-left: 0 !important;
+}
+
+/* Убеждаемся, что сообщения об ошибках отображаются корректно */
+.invalid-feedback.d-block {
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: var(--bs-danger);
+}
+</style>
 {% endblock %}
