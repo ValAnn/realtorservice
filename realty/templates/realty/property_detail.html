@@ -87,17 +87,34 @@
                 <h5 class="mb-0">Контактная информация</h5>
             </div>
             <div class="card-body">
+                {% if user.is_authenticated %}
+                {# Авторизованный пользователь видит прямые контакты #}
                 <div class="d-grid gap-2">
-                    <button class="btn btn-primary btn-lg">
+                    <a href="tel:{{ property.realtor.phone }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-telephone"></i> Позвонить: {{ property.realtor.phone }}
+                    </a>
+                    <a href="mailto:{{ property.realtor.user.email }}" class="btn btn-outline-primary">
+                        <i class="bi bi-envelope"></i> Написать: {{ property.realtor.user.email }}
+                    </a>
+                    <button class="btn btn-outline-secondary">
+                        <i class="bi bi-calendar"></i> Записаться на просмотр
+                    </button>
+                </div>
+                {% else %}
+                {# Неавторизованный пользователь видит общие кнопки-призывы #}
+                <p class="alert alert-info small">Для получения прямых контактов риелтора, пожалуйста, войдите или зарегистрируйтесь</p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary btn-lg" disabled>
                         <i class="bi bi-telephone"></i> Позвонить риелтору
                     </button>
-                    <button class="btn btn-outline-primary">
+                    <button class="btn btn-outline-primary" disabled>
                         <i class="bi bi-envelope"></i> Написать сообщение
                     </button>
                     <button class="btn btn-outline-secondary">
                         <i class="bi bi-calendar"></i> Записаться на просмотр
                     </button>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
