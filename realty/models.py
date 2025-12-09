@@ -66,7 +66,7 @@ class Property(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='properties', verbose_name="Клиент")
     
     # Изображения
-    main_image = models.ImageField(upload_to='properties/main/', verbose_name="Главное изображение")
+    main_image = models.ImageField(upload_to='properties/main/', verbose_name="Главное изображение", blank=True, null=True)
     image1 = models.ImageField(upload_to='properties/', verbose_name="Изображение 1", blank=True, null=True)
     image2 = models.ImageField(upload_to='properties/', verbose_name="Изображение 2", blank=True, null=True)
     image3 = models.ImageField(upload_to='properties/', verbose_name="Изображение 3", blank=True, null=True)

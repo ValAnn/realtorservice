@@ -128,14 +128,14 @@ class PropertyForm(forms.ModelForm):
             'price': forms.NumberInput(attrs={'class': 'form-control'}),
             'bedrooms': forms.NumberInput(attrs={'class': 'form-control'}),
             'bathrooms': forms.NumberInput(attrs={'class': 'form-control'}),
-            'area': forms.NumberInput(attrs={'class': 'form-control'}), # ИСПРАВЛЕНО: area
+            'area': forms.NumberInput(attrs={'class': 'form-control'}), 
             'address': forms.TextInput(attrs={'class': 'form-control'}),
             'property_type': forms.Select(attrs={'class': 'form-select'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
-            'main_image': forms.ClearableFileInput(attrs={'class': 'form-control'}), # ИСПРАВЛЕНО: main_image
-            'image1': forms.ClearableFileInput(attrs={'class': 'form-control'}), # ИСПРАВЛЕНО: image1
-            'image2': forms.ClearableFileInput(attrs={'class': 'form-control'}), # ИСПРАВЛЕНО: image2
-            'image3': forms.ClearableFileInput(attrs={'class': 'form-control'}), # ИСПРАВЛЕНО: image3
+            'main_image': forms.ClearableFileInput(attrs={'class': 'form-control'}), 
+            'image1': forms.ClearableFileInput(attrs={'class': 'form-control'}), 
+            'image2': forms.ClearableFileInput(attrs={'class': 'form-control'}), 
+            'image3': forms.ClearableFileInput(attrs={'class': 'form-control'}), 
         }
         
         labels = {
@@ -144,14 +144,14 @@ class PropertyForm(forms.ModelForm):
             'price': 'Цена (руб.)',
             'bedrooms': 'Количество спален',
             'bathrooms': 'Количество ванных',
-            'area': 'Площадь (м²)', # ИСПРАВЛЕНО: area
+            'area': 'Площадь (м²)', 
             'address': 'Адрес',
             'property_type': 'Тип недвижимости',
             'status': 'Статус',
-            'main_image': 'Главное фото', # ИСПРАВЛЕНО: main_image
-            'image1': 'Изображение 1', # ИСПРАВЛЕНО: image1
-            'image2': 'Изображение 2', # ИСПРАВЛЕНО: image2
-            'image3': 'Изображение 3', # ИСПРАВЛЕНО: image3
+            'main_image': 'Главное фото', 
+            'image1': 'Изображение 1', 
+            'image2': 'Изображение 2', 
+            'image3': 'Изображение 3',
         }
 
 class LoginForm(AuthenticationForm):
